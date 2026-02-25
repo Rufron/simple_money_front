@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mansa-X | Transactions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-blur sticky-top">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand fw-800 d-flex align-items-center" href="index.html">
+                <span class="logo-icon me-2">M</span> MANSA-X
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="wallets.html">Wallets</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="transactions.html">Transactions</a></li>
+                    <li class="nav-item ms-lg-2" id="logoutNavItem" style="display: none;">
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="logout()">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Status Bar -->
+    <div id="userStatusBar" class="bg-dark py-2 px-4"
+        style="border-bottom: 1px solid rgba(255,215,0,0.2); display: none;">
+        <div class="container-fluid px-lg-5">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-white-50 small">Logged in as:</span>
+                    <span class="text-warning fw-bold ms-2" id="loggedInUserName"></span>
+                </div>
+                <button class="btn btn-sm btn-link text-warning p-0" onclick="goToDashboard()">
+                    <i class="bi bi-house-door me-1"></i>Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="container-fluid px-lg-5 py-4">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="text-white fw-bold mb-1">Transactions</h2>
+                <p class="text-white-50 mb-0">View and manage all your transactions</p>
+            </div>
+            <div>
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#txModal">
+                    <i class="bi bi-plus-circle me-2"></i>New Transaction
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card glass-panel p-3 mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <select class="form-control" id="filterWallet">
+                        <option value="">All Wallets</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" id="filterType">
+                        <option value="">All Types</option>
+                        <option value="income">Income Only</option>
+                        <option value="expense">Expense Only</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="filterDate">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-outline-warning w-100" onclick="applyFilters()">
+                        <i class="bi bi-funnel me-2"></i>Apply Filters
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-light w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle me-2"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="card glass-panel p-4">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead class="text-white-50">
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Wallet</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allTransactions">
+                        <tr>
+                            <td colspan="6" class="text-center py-4">Loading transactions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mt-4 g-4">
+            <div class="col-md-3">
+                <div class="card glass-panel p-3">
+                    <small class="text-white-50">Total Income</small>
+                    <h4 class="text-success fw-bold" id="totalIncome">$0.00</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card glass-panel p-3">
+                    <small class="text-white-50">Total Expenses</small>
+                    <h4 class="text-danger fw-bold" id="totalExpenses">$0.00</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card glass-panel p-3">
+                    <small class="text-white-50">Net Flow</small>
+                    <h4 class="text-warning fw-bold" id="netFlow">$0.00</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card glass-panel p-3">
+                    <small class="text-white-50">Transaction Count</small>
+                    <h4 class="text-white fw-bold" id="txCount">0</h4>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Transaction Modal (reuse the existing one) -->
+    <div class="modal fade" id="txModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-warning">
+                <div class="modal-header border-0">
+                    <h5 class="text-white">Add Transaction</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="txForm">
+                        <div class="mb-3">
+                            <label class="text-white-50">Transaction Type</label>
+                            <div class="d-flex gap-3 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="type" id="income" value="income"
+                                        checked>
+                                    <label class="form-check-label text-white" for="income">Income</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="type" id="expense"
+                                        value="expense">
+                                    <label class="form-check-label text-white" for="expense">Expense</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50">Amount ($)</label>
+                            <input type="number" name="amount" class="form-control" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50">Description</label>
+                            <input type="text" name="description" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50">Select Wallet</label>
+                            <select name="wallet_id" class="form-control" id="wallet-select" required>
+                                <option value="">Choose a wallet</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Add Transaction</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,191 @@
+:root {
+    --primary-gold: #bf9000;
+    --dark-bg: #0f0f0f;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Fluid Navigation */
+.bg-blur {
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.navbar-brand .logo-icon {
+    background: var(--primary-gold);
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; font-weight: 800;
+}
+
+/* Responsive Container */
+.main-wrapper {
+    width: 100%; /* Removes the restricted max-width */
+    transition: all 0.3s ease;
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+}
+
+/* Stat Cards (Leaderboard Style) */
+.stat-card {
+    border-radius: 20px;
+    color: #1a1a1a;
+    transition: 0.3s;
+}
+.pink-glow { background: #f8c8d1; box-shadow: 0 8px 15px rgba(248, 200, 209, 0.3); }
+
+/* Profile Scalability */
+.profile-lg { width: 120px; height: 120px; border-radius: 40px; object-fit: cover; }
+
+/* Membership Buttons */
+.membership-btn {
+    border: none; border-radius: 12px;
+    color: #fff; font-weight: 700;
+}
+.foundation { background: var(--primary-gold); }
+.economy { background: #3d3d3d; }
+
+@media (min-width: 1400px) {
+    .container-fluid { padding-left: 100px; padding-right: 100px; }
+}
+
+
+/* missing css classes */
+
+/* Add to style.css */
+.blue-glow { 
+    background: #c8e1f8; 
+    box-shadow: 0 8px 15px rgba(200, 225, 248, 0.3); 
+}
+
+/* Transaction table improvements */
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Modal improvements */
+.modal-content.glass-panel {
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* Form controls */
+.form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-gold);
+    color: white;
+    box-shadow: none;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.5;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--primary-gold);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+    to { transform: rotate(360deg); }
+}
+
+
+
+/* latest */
+
+
+/* Wallet Detail View */
+#walletDetailView {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Alert styling */
+.alert {
+    background: rgba(220, 53, 69, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    color: white;
+}
+
+.alert-info {
+    background: rgba(13, 202, 240, 0.1);
+    border-color: rgba(13, 202, 240, 0.3);
+}
+
+/* User selector in modal */
+#userSelector {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#userSelector option {
+    background: #1a1a1a;
+    color: white;
+}
+
+/* Wallet cards hover effect */
+.stat-card {
+    transition: all 0.3s ease !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 20px rgba(191, 144, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #wallet-container {
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 0;
+    }
+}
+
+
+
+

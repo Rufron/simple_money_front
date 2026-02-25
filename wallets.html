@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mansa-X | Wallets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-blur sticky-top">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand fw-800 d-flex align-items-center" href="index.html">
+                <span class="logo-icon me-2">M</span> MANSA-X
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="wallets.html">Wallets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="transactions.html">Transactions</a></li>
+                    <li class="nav-item ms-lg-2" id="logoutNavItem" style="display: none;">
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="logout()">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Status Bar -->
+    <div id="userStatusBar" class="bg-dark py-2 px-4"
+        style="border-bottom: 1px solid rgba(255,215,0,0.2); display: none;">
+        <div class="container-fluid px-lg-5">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-white-50 small">Logged in as:</span>
+                    <span class="text-warning fw-bold ms-2" id="loggedInUserName"></span>
+                </div>
+                <button class="btn btn-sm btn-link text-warning p-0" onclick="goToDashboard()">
+                    <i class="bi bi-house-door me-1"></i>Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="container-fluid px-lg-5 py-4">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="text-white fw-bold mb-1">My Wallets</h2>
+                <p class="text-white-50 mb-0">Manage and view all your wallets</p>
+            </div>
+            <div>
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#walletModal">
+                    <i class="bi bi-plus-circle me-2"></i>Create New Wallet
+                </button>
+            </div>
+        </div>
+
+        <!-- Wallets Grid -->
+        <div class="row g-4" id="walletsGrid">
+            <!-- Wallets will be loaded here -->
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Statistics -->
+        <div class="row mt-5 g-4">
+            <div class="col-md-4">
+                <div class="card glass-panel p-4">
+                    <h6 class="text-white-50 mb-2">Total Balance</h6>
+                    <h2 class="text-warning fw-bold" id="totalBalance">$0.00</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-panel p-4">
+                    <h6 class="text-white-50 mb-2">Total Wallets</h6>
+                    <h2 class="text-white fw-bold" id="totalWallets">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-panel p-4">
+                    <h6 class="text-white-50 mb-2">Average Balance</h6>
+                    <h2 class="text-white fw-bold" id="avgBalance">$0.00</h2>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Wallet Modal -->
+    <div class="modal fade" id="walletModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-warning">
+                <div class="modal-header border-0">
+                    <h5 class="text-white">Create New Wallet</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createWalletForm">
+                        <div class="mb-3">
+                            <label class="text-white-50">Wallet Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g., Savings, Checking"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50">Initial Balance ($)</label>
+                            <input type="number" name="balance" class="form-control" value="0" step="0.01" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50">Description (Optional)</label>
+                            <textarea name="description" class="form-control" rows="2"
+                                placeholder="What's this wallet for?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Create Wallet</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Details Modal -->
+    <div class="modal fade" id="walletDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content glass-panel border-warning">
+                <div class="modal-header border-0">
+                    <h5 class="text-white" id="detailWalletName">Wallet Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="p-4" style="background: rgba(255,215,0,0.1); border-radius: 16px;">
+                                <small class="text-white-50">Current Balance</small>
+                                <h2 class="text-warning fw-bold" id="detailWalletBalance">$0.00</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-4" style="background: rgba(255,255,255,0.05); border-radius: 16px;">
+                                <small class="text-white-50">Description</small>
+                                <p class="text-white mb-0" id="detailWalletDescription">No description</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="text-white mb-3">Recent Transactions</h6>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead class="text-white-50">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailWalletTransactions">
+                                <tr>
+                                    <td colspan="3" class="text-center">Loading transactions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning" onclick="addTransactionToWallet()">
+                        <i class="bi bi-plus-circle me-2"></i>Add Transaction
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
