@@ -1,5 +1,6 @@
 // app.js
-const API_BASE = "http://127.0.0.1:8000/api";
+// const API_BASE = "http://127.0.0.1:8000/api";
+const API_BASE = "https://money-tracker-api-uesx.onrender.com/api";
 let currentUser = null;
 let selectedWalletId = null;
 let allUsers = [];
