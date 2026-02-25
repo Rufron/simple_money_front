@@ -930,67 +930,505 @@ window.goToDashboard = goToDashboard;
 
 // adding wallet.html code
 
-document.addEventListener('DOMContentLoaded', function () {
-            const savedUserId = sessionStorage.getItem('mansa_user_id');
-            if (savedUserId) {
-                loadUserById(savedUserId);
-                const logoutNavItem = document.getElementById('logoutNavItem');
-                if (logoutNavItem) logoutNavItem.style.display = 'block';
-            } else {
-                window.location.href = 'index.html';
-            }
+// document.addEventListener('DOMContentLoaded', function () {
+//             const savedUserId = sessionStorage.getItem('mansa_user_id');
+//             if (savedUserId) {
+//                 loadUserById(savedUserId);
+//                 const logoutNavItem = document.getElementById('logoutNavItem');
+//                 if (logoutNavItem) logoutNavItem.style.display = 'block';
+//             } else {
+//                 window.location.href = 'index.html';
+//             }
 
-            const createWalletForm = document.getElementById('createWalletForm');
-            if (createWalletForm) {
-                createWalletForm.addEventListener('submit', handleCreateWallet);
-            }
-        });
+//             const createWalletForm = document.getElementById('createWalletForm');
+//             if (createWalletForm) {
+//                 createWalletForm.addEventListener('submit', handleCreateWallet);
+//             }
+//         });
 
-        window.viewWalletDetails = async function (walletId) {
-            if (!currentUser) return;
+//         window.viewWalletDetails = async function (walletId) {
+//             if (!currentUser) return;
 
-            const wallet = currentUser.wallets.find(w => w.id === walletId);
-            if (!wallet) {
-                alert('Wallet not found');
-                return;
-            }
+//             const wallet = currentUser.wallets.find(w => w.id === walletId);
+//             if (!wallet) {
+//                 alert('Wallet not found');
+//                 return;
+//             }
 
-            // Update modal with wallet details
-            document.getElementById('detailWalletName').textContent = wallet.name;
-            document.getElementById('detailWalletBalance').textContent =
-                `$${parseFloat(wallet.balance).toLocaleString()}`;
-            document.getElementById('detailWalletDescription').textContent =
-                wallet.description || 'No description';
+//             // Update modal with wallet details
+//             document.getElementById('detailWalletName').textContent = wallet.name;
+//             document.getElementById('detailWalletBalance').textContent =
+//                 `$${parseFloat(wallet.balance).toLocaleString()}`;
+//             document.getElementById('detailWalletDescription').textContent =
+//                 wallet.description || 'No description';
 
-            // Fetch transactions
-            const tbody = document.getElementById('detailWalletTransactions');
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center">Loading transactions...</td></tr>';
+//             // Fetch transactions
+//             const tbody = document.getElementById('detailWalletTransactions');
+//             tbody.innerHTML = '<tr><td colspan="3" class="text-center">Loading transactions...</td></tr>';
 
-            try {
-                const response = await fetch(`${API_BASE}/transactions`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+//             try {
+//                 const response = await fetch(`${API_BASE}/transactions`);
+//                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                const result = await response.json();
+//                 const result = await response.json();
 
-                let allTx = [];
-                if (result.success && result.data) {
-                    allTx = result.data;
-                } else if (Array.isArray(result)) {
-                    allTx = result;
+//                 let allTx = [];
+//                 if (result.success && result.data) {
+//                     allTx = result.data;
+//                 } else if (Array.isArray(result)) {
+//                     allTx = result;
+//                 }
+
+//                 // Filter for this wallet
+//                 const walletTransactions = allTx.filter(tx => tx.wallet_id === walletId);
+
+//                 if (walletTransactions.length === 0) {
+//                     tbody.innerHTML = '<tr><td colspan="3" class="text-center">No transactions yet</td></tr>';
+//                 } else {
+//                     tbody.innerHTML = walletTransactions.map(tx => {
+//                         const amount = parseFloat(tx.amount);
+//                         // USE THE TYPE FIELD to determine if it's income or expense
+//                         const isIncome = tx.type === 'income';
+
+//                         return `
+//                     <tr>
+//                         <td>${new Date(tx.created_at).toLocaleDateString()}</td>
+//                         <td>${tx.description || 'Transaction'}</td>
+//                         <td class="${isIncome ? 'text-success' : 'text-danger'} fw-bold">
+//                             ${isIncome ? '+' : '-'}$${amount.toLocaleString()}
+//                         </td>
+//                     </tr>
+//                 `;
+//                     }).join('');
+//                 }
+//             } catch (error) {
+//                 console.error('Error fetching transactions:', error);
+//                 tbody.innerHTML = `
+//             <tr>
+//                 <td colspan="3" class="text-center text-danger">
+//                     <i class="bi bi-exclamation-triangle me-2"></i>
+//                     Unable to load transactions
+//                 </td>
+//             </tr>
+//         `;
+//             }
+
+//             selectedWalletId = walletId;
+//             new bootstrap.Modal(document.getElementById('walletDetailModal')).show();
+//         };
+
+//         window.addTransactionToWallet = function () {
+//             const modal = bootstrap.Modal.getInstance(document.getElementById('walletDetailModal'));
+//             if (modal) modal.hide();
+
+//             if (selectedWalletId) {
+//                 sessionStorage.setItem('selectedWalletForTx', selectedWalletId);
+//                 window.location.href = 'transactions.html';
+//             }
+//         };
+
+
+
+
+
+
+//         // code for transactions.html
+
+//         document.addEventListener('DOMContentLoaded', function () {
+//     const savedUserId = sessionStorage.getItem('mansa_user_id');
+//     if (savedUserId) {
+//         loadUserById(savedUserId);
+//         const logoutNavItem = document.getElementById('logoutNavItem');
+//         if (logoutNavItem) logoutNavItem.style.display = 'block';
+
+//         // Check for pre-selected wallet
+//         const selectedWalletId = sessionStorage.getItem('selectedWalletForTx');
+//         if (selectedWalletId) {
+//             setTimeout(() => {
+//                 const walletSelect = document.getElementById('wallet-select');
+//                 if (walletSelect) {
+//                     walletSelect.value = selectedWalletId;
+//                     const txModal = new bootstrap.Modal(document.getElementById('txModal'));
+//                     txModal.show();
+//                 }
+//                 sessionStorage.removeItem('selectedWalletForTx');
+//             }, 1000);
+//         }
+//     } else {
+//         window.location.href = 'index.html';
+//     }
+
+//     const txForm = document.getElementById('txForm');
+//     if (txForm) {
+//         txForm.addEventListener('submit', async function (e) {
+//             e.preventDefault();
+//             await handleCreateTransaction(e);
+//             await fetchAllTransactions();
+            
+//             bootstrap.Modal.getInstance(document.getElementById('txModal')).hide();
+//             txForm.reset();
+//             document.getElementById('income').checked = true;
+//         });
+//     }
+
+//     // Set up filter listeners
+//     document.getElementById('filterWallet')?.addEventListener('change', applyFilters);
+//     document.getElementById('filterType')?.addEventListener('change', applyFilters);
+//     document.getElementById('filterDate')?.addEventListener('change', applyFilters);
+// });
+
+// // Global variables
+// let allTransactions = [];
+// let userWallets = [];
+
+// // Override loadUserData to also fetch transactions
+// const originalLoadUserData = loadUserData;
+// loadUserData = async function () {
+//     await originalLoadUserData();
+//     if (currentUser && currentUser.wallets) {
+//         userWallets = currentUser.wallets;
+//         await fetchAllTransactions();
+//         updateFilterDropdown(userWallets);
+//     }
+// };
+
+// // Fetch all transactions from the correct endpoint
+// async function fetchAllTransactions() {
+//     if (!currentUser) return;
+
+//     try {
+//         const response = await fetch(`${API_BASE}/transactions`);
+//         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+//         const result = await response.json();
+
+//         let transactions = [];
+//         if (result.success && result.data) {
+//             transactions = result.data;
+//         } else if (Array.isArray(result)) {
+//             transactions = result;
+//         }
+
+//         const userWalletIds = userWallets.map(w => w.id);
+//         const userTransactions = transactions.filter(tx =>
+//             userWalletIds.includes(tx.wallet_id)
+//         );
+
+//         allTransactions = userTransactions.map(tx => {
+//             const wallet = userWallets.find(w => w.id === tx.wallet_id);
+//             return {
+//                 ...tx,
+//                 wallet_name: wallet ? wallet.name : 'Unknown'
+//             };
+//         });
+
+//         allTransactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+//         applyFilters();
+
+//     } catch (error) {
+//         console.error('Error fetching transactions:', error);
+//         const tbody = document.getElementById('allTransactions');
+//         if (tbody) {
+//             tbody.innerHTML = `
+//                 <tr>
+//                     <td colspan="6" class="text-center py-4">
+//                         <div class="text-danger">
+//                             <i class="bi bi-exclamation-triangle me-2"></i>
+//                             Error loading transactions. Please try again.
+//                         </div>
+//                         <button class="btn btn-sm btn-warning mt-2" onclick="fetchAllTransactions()">
+//                             <i class="bi bi-arrow-repeat me-1"></i>Retry
+//                         </button>
+//                     </td>
+//                 </tr>
+//             `;
+//         }
+//     }
+// }
+
+// function updateFilterDropdown(wallets) {
+//     const filterWallet = document.getElementById('filterWallet');
+//     if (!filterWallet) return;
+
+//     filterWallet.innerHTML = '<option value="">All Wallets</option>' +
+//         wallets.map(w => `<option value="${w.id}">${w.name} ($${w.balance})</option>`).join('');
+// }
+
+// // Uses type field
+// window.applyFilters = function () {
+//     const filterWallet = document.getElementById('filterWallet');
+//     const filterType = document.getElementById('filterType');
+//     const filterDate = document.getElementById('filterDate');
+
+//     let filtered = [...allTransactions];
+
+//     if (filterWallet && filterWallet.value) {
+//         filtered = filtered.filter(tx => tx.wallet_id == filterWallet.value);
+//     }
+
+//     if (filterType && filterType.value) {
+//         if (filterType.value === 'income') {
+//             filtered = filtered.filter(tx => tx.type === 'income');
+//         } else if (filterType.value === 'expense') {
+//             filtered = filtered.filter(tx => tx.type === 'expense');
+//         }
+//     }
+
+//     if (filterDate && filterDate.value) {
+//         const filterDateStr = filterDate.value;
+//         filtered = filtered.filter(tx => {
+//             const txDate = new Date(tx.created_at).toISOString().split('T')[0];
+//             return txDate === filterDateStr;
+//         });
+//     }
+
+//     renderTransactionsTable(filtered);
+//     updateSummary(filtered);
+// };
+
+// //Uses type field
+// function renderTransactionsTable(transactions) {
+//     const tbody = document.getElementById('allTransactions');
+//     if (!tbody) return;
+
+//     if (transactions.length === 0) {
+//         tbody.innerHTML = `
+//             <tr>
+//                 <td colspan="6" class="text-center py-4">
+//                     <i class="bi bi-inbox text-white-50" style="font-size: 2rem;"></i>
+//                     <p class="text-white-50 mt-2">No transactions found</p>
+//                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#txModal">
+//                         <i class="bi bi-plus-circle me-1"></i>Add Transaction
+//                     </button>
+//                 </td>
+//             </tr>
+//         `;
+//         return;
+//     }
+
+//     tbody.innerHTML = transactions.map(tx => {
+//         const amount = parseFloat(tx.amount);
+//         const isIncome = tx.type === 'income';
+
+//         return `
+//             <tr>
+//                 <td>${new Date(tx.created_at).toLocaleDateString()}</td>
+//                 <td>${tx.description || 'Transaction'}</td>
+//                 <td>${tx.wallet_name}</td>
+//                 <td>
+//                     <span class="badge ${isIncome ? 'bg-success' : 'bg-danger'} bg-opacity-25 text-white">
+//                         ${isIncome ? 'Income' : 'Expense'}
+//                     </span>
+//                 </td>
+//                 <td class="${isIncome ? 'text-success' : 'text-danger'} fw-bold">
+//                     ${isIncome ? '+' : '-'}$${amount.toLocaleString()}
+//                 </td>
+//                 <td>
+//                     <button class="btn btn-sm btn-outline-warning" onclick="showTransactionDetails(${tx.id})">
+//                         <i class="bi bi-eye"></i>
+//                     </button>
+//                 </td>
+//             </tr>
+//         `;
+//     }).join('');
+// }
+
+// //Uses type field
+// function updateSummary(transactions) {
+//     const income = transactions.filter(t => t.type === 'income')
+//         .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+//     const expenses = transactions.filter(t => t.type === 'expense')
+//         .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+//     const net = income - expenses;
+
+//     document.getElementById('totalIncome').textContent = `$${income.toLocaleString()}`;
+//     document.getElementById('totalExpenses').textContent = `$${expenses.toLocaleString()}`;
+//     document.getElementById('netFlow').textContent = `$${net.toLocaleString()}`;
+//     document.getElementById('txCount').textContent = transactions.length;
+// }
+
+// //Uses type field
+// window.showTransactionDetails = function (transactionId) {
+//     const transaction = allTransactions.find(t => t.id === transactionId);
+//     if (transaction) {
+//         alert(`
+// Transaction Details:
+// -------------------
+// Description: ${transaction.description || 'N/A'}
+// Amount: $${transaction.amount}
+// Type: ${transaction.type === 'income' ? 'Income' : 'Expense'}
+// Wallet: ${transaction.wallet_name}
+// Date: ${new Date(transaction.created_at).toLocaleString()}
+//         `);
+//     }
+// };
+
+// window.clearFilters = function () {
+//     document.getElementById('filterWallet').value = '';
+//     document.getElementById('filterType').value = '';
+//     document.getElementById('filterDate').value = '';
+//     applyFilters();
+// };
+
+// // Helper function
+// function safeGetElement(id) {
+//     const el = document.getElementById(id);
+//     if (!el) {
+//         console.warn(`Element with id '${id}' not found`);
+//     }
+//     return el;
+// }
+
+
+
+
+
+
+
+
+
+
+// 2. updated version
+document.addEventListener('DOMContentLoaded', function() {
+    // This runs AFTER the main initialization
+    // Check which page we're on
+    const currentPath = window.location.pathname;
+    
+    // Only run wallet page code if we're on wallets.html
+    if (currentPath.includes('wallets.html')) {
+        console.log('Initializing wallets page from app.js');
+        
+        // Make sure we have a user
+        const savedUserId = sessionStorage.getItem('mansa_user_id');
+        if (!savedUserId) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Add wallet-specific event listeners if needed
+        const createWalletForm = document.getElementById('createWalletForm');
+        if (createWalletForm) {
+            // Remove any existing listeners first to prevent duplicates
+            const newForm = createWalletForm.cloneNode(true);
+            createWalletForm.parentNode.replaceChild(newForm, createWalletForm);
+            newForm.addEventListener('submit', handleCreateWallet);
+        }
+    }
+    
+    // Only run transactions page code if we're on transactions.html
+    else if (currentPath.includes('transactions.html')) {
+        console.log('Initializing transactions page from app.js');
+        
+        // Make sure we have a user
+        const savedUserId = sessionStorage.getItem('mansa_user_id');
+        if (!savedUserId) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Check for pre-selected wallet
+        const selectedWalletId = sessionStorage.getItem('selectedWalletForTx');
+        if (selectedWalletId) {
+            setTimeout(() => {
+                const walletSelect = document.getElementById('wallet-select');
+                if (walletSelect) {
+                    walletSelect.value = selectedWalletId;
+                    const txModal = document.getElementById('txModal');
+                    if (txModal) {
+                        new bootstrap.Modal(txModal).show();
+                    }
                 }
+                sessionStorage.removeItem('selectedWalletForTx');
+            }, 1000);
+        }
+        
+        // Set up transaction form
+        const txForm = document.getElementById('txForm');
+        if (txForm) {
+            // Remove existing listeners
+            const newTxForm = txForm.cloneNode(true);
+            txForm.parentNode.replaceChild(newTxForm, txForm);
+            
+            newTxForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await handleCreateTransaction(e);
+                await fetchAllTransactions();
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('txModal'));
+                if (modal) modal.hide();
+                
+                newTxForm.reset();
+                document.getElementById('income').checked = true;
+            });
+        }
+        
+        // Set up filter listeners
+        const filterWallet = document.getElementById('filterWallet');
+        const filterType = document.getElementById('filterType');
+        const filterDate = document.getElementById('filterDate');
+        
+        if (filterWallet) {
+            filterWallet.replaceWith(filterWallet.cloneNode(true));
+            document.getElementById('filterWallet')?.addEventListener('change', applyFilters);
+        }
+        if (filterType) {
+            filterType.replaceWith(filterType.cloneNode(true));
+            document.getElementById('filterType')?.addEventListener('change', applyFilters);
+        }
+        if (filterDate) {
+            filterDate.replaceWith(filterDate.cloneNode(true));
+            document.getElementById('filterDate')?.addEventListener('change', applyFilters);
+        }
+    }
+});
 
-                // Filter for this wallet
-                const walletTransactions = allTx.filter(tx => tx.wallet_id === walletId);
+// ============= WALLETS PAGE FUNCTIONS =============
+// Keep these at the bottom
 
-                if (walletTransactions.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center">No transactions yet</td></tr>';
-                } else {
-                    tbody.innerHTML = walletTransactions.map(tx => {
-                        const amount = parseFloat(tx.amount);
-                        // USE THE TYPE FIELD to determine if it's income or expense
-                        const isIncome = tx.type === 'income';
+window.viewWalletDetails = async function(walletId) {
+    if (!currentUser) return;
 
-                        return `
+    const wallet = currentUser.wallets.find(w => w.id === walletId);
+    if (!wallet) {
+        alert('Wallet not found');
+        return;
+    }
+
+    // Update modal with wallet details
+    document.getElementById('detailWalletName').textContent = wallet.name;
+    document.getElementById('detailWalletBalance').textContent =
+        `$${parseFloat(wallet.balance).toLocaleString()}`;
+    document.getElementById('detailWalletDescription').textContent =
+        wallet.description || 'No description';
+
+    // Fetch transactions
+    const tbody = document.getElementById('detailWalletTransactions');
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center">Loading transactions...</td></tr>';
+
+    try {
+        const response = await fetch(`${API_BASE}/transactions`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const result = await response.json();
+
+        let allTx = [];
+        if (result.success && result.data) {
+            allTx = result.data;
+        } else if (Array.isArray(result)) {
+            allTx = result;
+        }
+
+        // Filter for this wallet
+        const walletTransactions = allTx.filter(tx => tx.wallet_id === walletId);
+
+        if (walletTransactions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">No transactions yet</td></tr>';
+        } else {
+            tbody.innerHTML = walletTransactions.map(tx => {
+                const amount = parseFloat(tx.amount);
+                const isIncome = tx.type === 'income';
+
+                return `
                     <tr>
                         <td>${new Date(tx.created_at).toLocaleDateString()}</td>
                         <td>${tx.description || 'Transaction'}</td>
@@ -999,11 +1437,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         </td>
                     </tr>
                 `;
-                    }).join('');
-                }
-            } catch (error) {
-                console.error('Error fetching transactions:', error);
-                tbody.innerHTML = `
+            }).join('');
+        }
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        tbody.innerHTML = `
             <tr>
                 <td colspan="3" class="text-center text-danger">
                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -1011,90 +1449,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 </td>
             </tr>
         `;
-            }
-
-            selectedWalletId = walletId;
-            new bootstrap.Modal(document.getElementById('walletDetailModal')).show();
-        };
-
-        window.addTransactionToWallet = function () {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('walletDetailModal'));
-            if (modal) modal.hide();
-
-            if (selectedWalletId) {
-                sessionStorage.setItem('selectedWalletForTx', selectedWalletId);
-                window.location.href = 'transactions.html';
-            }
-        };
-
-
-
-
-
-
-        // code for transactions.html
-
-        document.addEventListener('DOMContentLoaded', function () {
-    const savedUserId = sessionStorage.getItem('mansa_user_id');
-    if (savedUserId) {
-        loadUserById(savedUserId);
-        const logoutNavItem = document.getElementById('logoutNavItem');
-        if (logoutNavItem) logoutNavItem.style.display = 'block';
-
-        // Check for pre-selected wallet
-        const selectedWalletId = sessionStorage.getItem('selectedWalletForTx');
-        if (selectedWalletId) {
-            setTimeout(() => {
-                const walletSelect = document.getElementById('wallet-select');
-                if (walletSelect) {
-                    walletSelect.value = selectedWalletId;
-                    const txModal = new bootstrap.Modal(document.getElementById('txModal'));
-                    txModal.show();
-                }
-                sessionStorage.removeItem('selectedWalletForTx');
-            }, 1000);
-        }
-    } else {
-        window.location.href = 'index.html';
     }
 
-    const txForm = document.getElementById('txForm');
-    if (txForm) {
-        txForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            await handleCreateTransaction(e);
-            await fetchAllTransactions();
-            
-            bootstrap.Modal.getInstance(document.getElementById('txModal')).hide();
-            txForm.reset();
-            document.getElementById('income').checked = true;
-        });
-    }
+    selectedWalletId = walletId;
+    new bootstrap.Modal(document.getElementById('walletDetailModal')).show();
+};
 
-    // Set up filter listeners
-    document.getElementById('filterWallet')?.addEventListener('change', applyFilters);
-    document.getElementById('filterType')?.addEventListener('change', applyFilters);
-    document.getElementById('filterDate')?.addEventListener('change', applyFilters);
-});
+window.addTransactionToWallet = function() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('walletDetailModal'));
+    if (modal) modal.hide();
 
-// Global variables
-let allTransactions = [];
-let userWallets = [];
-
-// Override loadUserData to also fetch transactions
-const originalLoadUserData = loadUserData;
-loadUserData = async function () {
-    await originalLoadUserData();
-    if (currentUser && currentUser.wallets) {
-        userWallets = currentUser.wallets;
-        await fetchAllTransactions();
-        updateFilterDropdown(userWallets);
+    if (selectedWalletId) {
+        sessionStorage.setItem('selectedWalletForTx', selectedWalletId);
+        window.location.href = 'transactions.html';
     }
 };
 
-// Fetch all transactions from the correct endpoint
+// ============= TRANSACTIONS PAGE FUNCTIONS =============
+
+// Global variables for transactions
+let allTransactions = [];
+let userWallets = [];
+
+// Override loadUserData for transactions page
+const originalLoadUserData = loadUserData;
+loadUserData = async function() {
+    await originalLoadUserData();
+    if (window.location.pathname.includes('transactions.html')) {
+        if (currentUser && currentUser.wallets) {
+            userWallets = currentUser.wallets;
+            await fetchAllTransactions();
+            updateFilterDropdown(userWallets);
+        }
+    }
+};
+
 async function fetchAllTransactions() {
-    if (!currentUser) return;
+    if (!currentUser || !window.location.pathname.includes('transactions.html')) return;
 
     try {
         const response = await fetch(`${API_BASE}/transactions`);
@@ -1148,14 +1539,15 @@ async function fetchAllTransactions() {
 
 function updateFilterDropdown(wallets) {
     const filterWallet = document.getElementById('filterWallet');
-    if (!filterWallet) return;
+    if (!filterWallet || !window.location.pathname.includes('transactions.html')) return;
 
     filterWallet.innerHTML = '<option value="">All Wallets</option>' +
         wallets.map(w => `<option value="${w.id}">${w.name} ($${w.balance})</option>`).join('');
 }
 
-// Uses type field
-window.applyFilters = function () {
+window.applyFilters = function() {
+    if (!window.location.pathname.includes('transactions.html')) return;
+    
     const filterWallet = document.getElementById('filterWallet');
     const filterType = document.getElementById('filterType');
     const filterDate = document.getElementById('filterDate');
@@ -1186,8 +1578,9 @@ window.applyFilters = function () {
     updateSummary(filtered);
 };
 
-//Uses type field
 function renderTransactionsTable(transactions) {
+    if (!window.location.pathname.includes('transactions.html')) return;
+    
     const tbody = document.getElementById('allTransactions');
     if (!tbody) return;
 
@@ -1233,8 +1626,9 @@ function renderTransactionsTable(transactions) {
     }).join('');
 }
 
-//Uses type field
 function updateSummary(transactions) {
+    if (!window.location.pathname.includes('transactions.html')) return;
+    
     const income = transactions.filter(t => t.type === 'income')
         .reduce((sum, t) => sum + parseFloat(t.amount), 0);
     const expenses = transactions.filter(t => t.type === 'expense')
@@ -1247,8 +1641,9 @@ function updateSummary(transactions) {
     document.getElementById('txCount').textContent = transactions.length;
 }
 
-//Uses type field
-window.showTransactionDetails = function (transactionId) {
+window.showTransactionDetails = function(transactionId) {
+    if (!window.location.pathname.includes('transactions.html')) return;
+    
     const transaction = allTransactions.find(t => t.id === transactionId);
     if (transaction) {
         alert(`
@@ -1263,18 +1658,11 @@ Date: ${new Date(transaction.created_at).toLocaleString()}
     }
 };
 
-window.clearFilters = function () {
+window.clearFilters = function() {
+    if (!window.location.pathname.includes('transactions.html')) return;
+    
     document.getElementById('filterWallet').value = '';
     document.getElementById('filterType').value = '';
     document.getElementById('filterDate').value = '';
     applyFilters();
 };
-
-// Helper function
-function safeGetElement(id) {
-    const el = document.getElementById(id);
-    if (!el) {
-        console.warn(`Element with id '${id}' not found`);
-    }
-    return el;
-}
